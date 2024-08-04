@@ -17,7 +17,8 @@
   },
   "author": "win-le",
   "keywords": [
-    "chrome-extension-storage"
+    "chrome-extension-storage",
+    "storage-api"
   ],
   "license": "ISC",
   "devDependencies": {
@@ -31,5 +32,13 @@
   },
   "peerDependencies": {
     "@types/chrome": "^0.0.269"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/win-le/chex-storage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/win-le/chex-storage/issues"
+  },
+  "homepage": "https://github.com/win-le/chex-storage#readme"
 }
