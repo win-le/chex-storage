@@ -2,6 +2,8 @@
 
 `chex-storage` is a wrapper library for Chrome extension storage local - the standard storage in the chrome extension.
 
+Currently, `chex-storage` only support ASCII and Unicode Latin
+
 ## Install
 
 ```cmd

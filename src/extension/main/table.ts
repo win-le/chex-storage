@@ -1,4 +1,4 @@
-import type { Optional, StorageKey } from "./typing";
+import { Optional, StorageKey } from "typing";
 
 import ChexStorageWhereMethods from "./_where";
 
@@ -43,9 +43,15 @@ class ChexTable<TData, TKeyPropName extends keyof TData> {
   ): Promise<TData[TKeyPropName]> {
     if (this.#key.indexOf("++") === 0) {
       const db = await this.getDatabase();
-      const tableData = db[this.#tableName];
+      const keyName = this.#key.split("++")[1];
 
-      return ((tableData?.length || 0) + 1) as TData[TKeyPropName];
+      const tableData =
+        db[this.#tableName]?.sort(
+          (a: any, b: any) => a[keyName] - b[keyName]
+        ) || [];
+
+      return (((tableData?.[tableData.length - 1] as any)?.[keyName] || 0) +
+        1) as TData[TKeyPropName];
     }
 
     if (!data?.[this.#keyName as TKeyPropName]) {
@@ -168,6 +174,50 @@ class ChexTable<TData, TKeyPropName extends keyof TData> {
 
     if (!rowNeedUpdate) {
       throw new Error("Don't find item with key");
+    }
+
+    await chrome.storage.local.set({
+      [this.#database]: {
+        ...db,
+        [this.#tableName]: [
+          ...tableData.filter((row) => row[this.#keyName] !== keyValue),
+          {
+            ...rowNeedUpdate,
+            ...change,
+          },
+        ],
+      },
+    });
+
+    return keyValue;
+  }
+
+  /**
+   * Update data for create new record
+   *
+   * @param keyValue
+   * @param change
+   * @param defaultValue
+   * @returns
+   */
+  async updateOrCreate(
+    keyValue: TData[TKeyPropName],
+    change: Partial<Omit<TData, TKeyPropName>>,
+    defaultValue: Omit<TData, TKeyPropName>
+  ): Promise<TData[TKeyPropName]> {
+    const db = await this.getDatabase();
+
+    const tableData = db[this.#tableName];
+
+    const rowNeedUpdate = tableData.find(
+      (row) => row[this.#keyName] === keyValue
+    );
+
+    if (!rowNeedUpdate) {
+      return await this.add({
+        [this.#keyName]: keyValue,
+        ...defaultValue,
+      } as Optional<TData, TKeyPropName>);
     }
 
     await chrome.storage.local.set({
