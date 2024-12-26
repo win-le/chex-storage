@@ -1,9 +1,9 @@
-import ChexTable from "./table";
+import ChexTable from "./main/table";
 
 class ChexDatabase {
   databaseName: string;
 
-  constructor(databaseName: string, initData?: { [key: string]: any[] }) {
+  constructor(databaseName: string, initData?: { [key: string]: unknown[] }) {
     this.databaseName = databaseName;
 
     chrome.storage.local.get(databaseName).then((db) => {
